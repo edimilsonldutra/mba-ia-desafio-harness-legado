@@ -1,0 +1,5 @@
+import type { Ticket } from '../domain/ticket'
+
+export function rotulo(status: string): string {
+  return status.toUpperCase()
+}

@@ -11,7 +11,7 @@
     "down": "node scripts/down.mjs",
     "gates": "node scripts/gates/run.mjs",
     "gates:hook": "node scripts/gates/run.mjs --only G1,G2,G4,G5,G6,G7,G8,G9,G11,G12",
-    "gates:exemplos": "node scripts/gates/exemplos.mjs"
+    "gates:exemplos": "bash scripts/gates/kit-extra/verificar.sh . \"npm run --silent gates\""
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

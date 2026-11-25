@@ -1,0 +1,3 @@
+import type { Filho } from './no-filho'
+
+export type Pai = { filhos: Filho[] }

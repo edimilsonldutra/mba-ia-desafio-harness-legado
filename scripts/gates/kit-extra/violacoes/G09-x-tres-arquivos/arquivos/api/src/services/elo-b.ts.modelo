@@ -1,0 +1,3 @@
+import { c } from './elo-c'
+
+export const b = (n: number): number => (n > 0 ? c(n - 1) : 1)

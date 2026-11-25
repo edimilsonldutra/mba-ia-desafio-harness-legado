@@ -1,0 +1,5 @@
+export type StatusLocal = 'a' | 'b'
+
+export function primeiro(): string {
+  return 'a'
+}

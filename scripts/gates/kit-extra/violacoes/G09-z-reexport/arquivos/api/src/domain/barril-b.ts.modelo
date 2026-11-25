@@ -1,0 +1,2 @@
+export * from './barril-a'
+export const dois = 2

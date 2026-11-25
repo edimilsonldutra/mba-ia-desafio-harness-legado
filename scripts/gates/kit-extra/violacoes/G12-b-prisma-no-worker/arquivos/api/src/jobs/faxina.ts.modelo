@@ -1,0 +1,3 @@
+import * as prismaPkg from '@prisma/client'
+
+export const banco = new prismaPkg.PrismaClient()

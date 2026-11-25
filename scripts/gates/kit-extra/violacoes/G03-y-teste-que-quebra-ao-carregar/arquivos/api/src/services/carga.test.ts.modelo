@@ -1,0 +1,7 @@
+import { describe, it } from 'vitest'
+
+throw new Error('falha ao carregar o teste')
+
+describe('carga', () => {
+  it('nunca roda', () => {})
+})

@@ -1,0 +1,1 @@
+export const modoFront: string = import.meta['env'].MODE

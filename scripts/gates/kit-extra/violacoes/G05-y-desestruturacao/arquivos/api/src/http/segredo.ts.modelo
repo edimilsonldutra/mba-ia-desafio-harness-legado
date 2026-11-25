@@ -1,0 +1,3 @@
+const { env } = process
+
+export const segredo: string = env.JWT_SECRET ?? ''

@@ -211,9 +211,30 @@ function envAccesses(sourceFile, kind) {
     if (ts.isParenthesizedExpression(expr)) return isProcess(expr.expression)
     return false
   }
-  const isImportMeta = (expr) =>
-    ts.isMetaProperty(expr) && expr.keywordToken === ts.SyntaxKind.ImportKeyword && expr.name.text === 'meta'
+  const metaAliases = new Set()
+  const isImportMeta = (expr) => {
+    if (ts.isIdentifier(expr)) return metaAliases.has(expr.text)
+    if (ts.isParenthesizedExpression(expr)) return isImportMeta(expr.expression)
+    return ts.isMetaProperty(expr) && expr.keywordToken === ts.SyntaxKind.ImportKeyword && expr.name.text === 'meta'
+  }
   const isTarget = kind === 'process' ? isProcess : isImportMeta
+  const aliases = kind === 'process' ? processAliases : metaAliases
+  // Primeiro os apelidos (const p = process, const meta = import.meta), em qualquer ordem no arquivo.
+  let grew = true
+  while (grew) {
+    grew = false
+    const collect = (node) => {
+      if (ts.isVariableDeclaration(node) && node.initializer && ts.isIdentifier(node.name) && !aliases.has(node.name.text)) {
+        const init = node.initializer
+        if (isTarget(init) || (kind === 'process' && ts.isCallExpression(init) && isRequireOfProcess(init))) {
+          aliases.add(node.name.text)
+          grew = true
+        }
+      }
+      ts.forEachChild(node, collect)
+    }
+    collect(sourceFile)
+  }
   const record = (node) => hits.push(sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1)
 
   if (kind === 'process') {
@@ -251,10 +272,6 @@ function envAccesses(sourceFile, kind) {
       isRequireOfProcess(node.expression)
     ) {
       record(node)
-    } else if (kind === 'process' && ts.isVariableDeclaration(node) && node.initializer && ts.isIdentifier(node.name)) {
-      if (isProcess(node.initializer) || (ts.isCallExpression(node.initializer) && isRequireOfProcess(node.initializer))) {
-        processAliases.add(node.name.text)
-      }
     }
     ts.forEachChild(node, visit)
   }

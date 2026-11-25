@@ -1,0 +1,5 @@
+import type { Response } from 'express-serve-static-core'
+
+export function status(res: Response): number {
+  return res.statusCode
+}

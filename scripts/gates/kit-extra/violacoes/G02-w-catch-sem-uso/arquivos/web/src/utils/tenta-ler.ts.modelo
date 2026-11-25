@@ -1,0 +1,7 @@
+export function tentaLer(texto: string): unknown {
+  try {
+    return JSON.parse(texto)
+  } catch (erro) {
+    return null
+  }
+}

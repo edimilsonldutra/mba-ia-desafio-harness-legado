@@ -1,0 +1,3 @@
+const openai = require('openai')
+
+export const temIa: boolean = Boolean(openai)

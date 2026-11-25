@@ -1,0 +1,3 @@
+import { TICKET_STATUSES } from '../../../api/src/domain/ticket'
+
+export const quantos: number = TICKET_STATUSES.length

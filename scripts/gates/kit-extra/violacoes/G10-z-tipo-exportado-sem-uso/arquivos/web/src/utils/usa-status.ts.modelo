@@ -1,0 +1,3 @@
+import { primeiro } from './status'
+
+export const valor: string = primeiro()

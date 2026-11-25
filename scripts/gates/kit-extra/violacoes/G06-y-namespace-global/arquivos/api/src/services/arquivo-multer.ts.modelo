@@ -1,0 +1,3 @@
+export function nomeDoArquivo(arquivo: Express.Multer.File): string {
+  return arquivo.originalname
+}

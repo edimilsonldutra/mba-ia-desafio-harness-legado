@@ -1,0 +1,1 @@
+export const lote: number = Number('10') + 'chamados'
