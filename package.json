@@ -1,0 +1,24 @@
+{
+  "name": "balcao-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "up": "node scripts/up.mjs",
+    "down": "node scripts/down.mjs",
+    "gates": "node scripts/gates/run.mjs",
+    "gates:hook": "node scripts/gates/run.mjs --only G1,G2,G4,G5,G6,G7,G8,G9,G11,G12",
+    "gates:exemplos": "node scripts/gates/exemplos.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "globals": "^17.14.0",
+    "knip": "^6.48.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.74.0"
+  }
+}
