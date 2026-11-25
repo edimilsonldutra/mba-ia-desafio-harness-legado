@@ -2,7 +2,9 @@ import { defineConfig } from 'vitest/config'
 
 try {
   process.loadEnvFile('.env')
-} catch {}
+} catch {
+  // sem api/.env: as variáveis vêm do ambiente
+}
 
 export default defineConfig({
   test: {

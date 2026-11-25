@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { AuthService, EmailTakenError, InvalidCredentialsError } from './auth-service'
 import { NewUser, UserRepository } from '../repositories/user-repository'
+import { AuthService, EmailTakenError, InvalidCredentialsError } from './auth-service'
+
+type StoredUser = NonNullable<Awaited<ReturnType<UserRepository['findById']>>>
 
 class FakeUserRepository implements UserRepository {
-  users: any[] = []
+  users: StoredUser[] = []
 
   async findById(id: string) {
     return this.users.find((u) => u.id === id) || null
@@ -13,8 +15,15 @@ class FakeUserRepository implements UserRepository {
     return this.users.find((u) => u.email === email) || null
   }
 
-  async create(data: NewUser): Promise<any> {
-    const user = { id: `u${this.users.length + 1}`, role: 'customer', createdAt: new Date(), ...data }
+  async create(data: NewUser) {
+    const user: StoredUser = {
+      id: `u${this.users.length + 1}`,
+      name: data.name,
+      email: data.email,
+      passwordHash: data.passwordHash,
+      role: data.role ?? 'customer',
+      createdAt: new Date(),
+    }
     this.users.push(user)
     return user
   }
@@ -43,5 +52,12 @@ describe('AuthService', () => {
     await expect(service.login({ email: 'maria@x.com', password: 'errada123' })).rejects.toBeInstanceOf(
       InvalidCredentialsError,
     )
+  })
+
+  it('devolve o perfil sem o hash e null para usuário inexistente', async () => {
+    const service = new AuthService(new FakeUserRepository())
+    const created = await service.register({ name: 'Maria', email: 'maria@x.com', password: '12345678' })
+    expect(await service.profile(created.id)).toEqual(created)
+    expect(await service.profile('nao-existe')).toBeNull()
   })
 })

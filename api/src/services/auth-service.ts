@@ -16,7 +16,7 @@ export const loginSchema = z.object({
   password: z.string(),
 })
 
-export function serializeUser(user: any) {
+function serializeUser(user: { id: string; name: string; email: string; role: string }) {
   return { id: user.id, name: user.name, email: user.email, role: user.role }
 }
 
@@ -37,5 +37,10 @@ export class AuthService {
     const ok = await bcrypt.compare(input.password, user.passwordHash)
     if (!ok) throw new InvalidCredentialsError('E-mail ou senha inválidos')
     return serializeUser(user)
+  }
+
+  async profile(id: string) {
+    const user = await this.users.findById(id)
+    return user ? serializeUser(user) : null
   }
 }

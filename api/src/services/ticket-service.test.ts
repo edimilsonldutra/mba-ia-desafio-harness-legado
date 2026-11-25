@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { TicketService, formatTicketRef } from './ticket-service'
-import { HttpError } from '../http/errors'
+import { AppError } from '../domain/errors'
+import { formatTicketRef } from './notification-service'
+import { TicketService } from './ticket-service'
 import { CurrentUser, Ticket } from '../domain/ticket'
 import { TicketFilter, TicketRepository, TicketUpdate } from '../repositories/ticket-repository'
 import { ReplyRepository } from '../repositories/reply-repository'
@@ -38,6 +39,10 @@ class FakeTicketRepository implements TicketRepository {
     return ticket ? { ...ticket, replies: [], attachments: [] } : null
   }
 
+  async findPendingTriage(limit: number) {
+    return this.items.filter((t) => t.triageStatus === 'pending').slice(0, limit)
+  }
+
   async list(filter: TicketFilter, page: number, pageSize: number) {
     let items = this.items.filter(
       (t) => (!filter.customerId || t.customerId === filter.customerId) && (!filter.status || t.status === filter.status),
@@ -53,8 +58,10 @@ class FakeTicketRepository implements TicketRepository {
   }
 }
 
+type StoredReply = Awaited<ReturnType<ReplyRepository['create']>>
+
 class FakeReplyRepository implements ReplyRepository {
-  items: any[] = []
+  items: StoredReply[] = []
 
   async create(data: { ticketId: string; authorId: string; body: string }) {
     const reply = { id: `reply-${this.items.length + 1}`, ...data, createdAt: new Date() }
@@ -70,10 +77,9 @@ const otherAgent: CurrentUser = { id: 'a2', role: 'agent' }
 const admin: CurrentUser = { id: 'adm', role: 'admin' }
 
 async function expectHttpError(promise: Promise<unknown>, status: number, code: string) {
-  const err: any = await promise.catch((e) => e)
-  expect(err).toBeInstanceOf(HttpError)
-  expect(err.status).toBe(status)
-  expect(err.code).toBe(code)
+  const err: unknown = await promise.catch((e: unknown) => e)
+  expect(err).toBeInstanceOf(AppError)
+  expect(err).toMatchObject({ status, code })
 }
 
 describe('TicketService', () => {
