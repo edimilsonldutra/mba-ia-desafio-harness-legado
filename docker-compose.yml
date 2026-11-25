@@ -1,3 +1,6 @@
+# Postgres de uma cópia do Balcão. O `npm run up` sobe este arquivo com um nome de
+# projeto próprio por cópia (balcao-<pasta>-<hash>), e o Docker escolhe uma porta livre
+# do host: duas worktrees nunca disputam a mesma porta nem o mesmo volume.
 services:
   db:
     image: postgres:16
@@ -6,7 +9,13 @@ services:
       POSTGRES_PASSWORD: balcao
       POSTGRES_DB: balcao
     ports:
-      - "5432:5432"
+      - "127.0.0.1::5432"
+    healthcheck:
+      # Pela rede: durante a inicialização o Postgres só aceita conexões pelo socket local.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U balcao -d balcao"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
     volumes:
       - pgdata:/var/lib/postgresql/data
 

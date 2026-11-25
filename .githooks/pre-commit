@@ -1,0 +1,10 @@
+#!/bin/sh
+# Antes de cada commit: tipos (G1), lint (G2) e as regras estruturais (G4 a G9, G11, G12).
+# Bloqueia o commit se qualquer uma falhar. A suíte completa (com testes e código morto)
+# é o npm run gates. Ativado pelo npm run up (git config core.hooksPath .githooks).
+cd "$(git rev-parse --show-toplevel)" || exit 1
+if ! npm run --silent gates:hook; then
+  echo
+  echo "Commit bloqueado pelos gates. Corrija as violações acima e tente de novo."
+  exit 1
+fi
