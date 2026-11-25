@@ -41,6 +41,8 @@ Central de chamados: API Express + Prisma + Postgres em `api/`, worker de triage
 - A API HTTP é contrato: rotas, corpos, status e códigos de erro não mudam. A caixa-preta prova isso.
 - Testes unitários ficam ao lado do código: `api/src/**/*.test.ts`.
 - Não apague `node_modules` à mão: o `npm run up` reinstala sozinho quando o lockfile muda.
+- Ao adicionar ou remover um pacote, revise o `git diff` do `package-lock.json`: o npm 11 reescreve
+  metadados (`"peer": true`) de pacotes sem relação com a mudança. Mantenha só as entradas do pacote.
 
 ## Onde está o detalhe
 
